@@ -100,6 +100,41 @@ async function run() {
             res.send(result);
         });
 
+        ///task status changing
+        app.put('/tasks/updatestatus/:id', async (req, res) => {
+            const taskStatus = req.query.status;
+            // console.log(taskStatus);
+
+            const id = req.params.id;
+            const queryId = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            let updatedDoc;
+            updatedDoc = {
+                $set: {
+                    status: taskStatus,
+                }
+            };
+
+
+
+            const result = await tasksCollection.updateOne(queryId, updatedDoc, options);
+            res.send(result);
+        });
+
+
+        //getting user specified completed tasks
+        app.get('/completedtasks', async (req, res) => {
+            const email = req.query.email;
+            // console.log(email);
+            const query =
+            {
+                email: email,
+                status: "Completed"
+            };
+            const completedTasks = await tasksCollection.find(query).toArray();
+            res.send(completedTasks);
+        });
+
 
 
     }
